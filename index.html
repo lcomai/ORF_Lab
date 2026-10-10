@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORF Lab · BIS 101</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">BIS 101 · sequence exploration</p>
+    <h1>ORF Lab</h1>
+    <p class="lede">Find open reading frames on both DNA strands, then inspect the codons and protein they encode.</p>
+  </header>
+
+  <section class="panel" aria-labelledby="sequence-heading">
+    <div class="section-heading"><span class="step">1</span><h2 id="sequence-heading">Choose or enter DNA</h2></div>
+    <div class="source-row" role="group" aria-label="Sequence source">
+      <button type="button" class="source active" data-source="toy" aria-pressed="true">Toy gene</button>
+      <button type="button" class="source" data-source="bacterial" aria-pressed="false">E. coli aroA</button>
+      <button type="button" class="source" data-source="eukaryotic" aria-pressed="false">A. lyrata aroA</button>
+      <button type="button" class="source" data-source="random" aria-pressed="false">Random DNA</button>
+    </div>
+    <p id="source-note" class="note"></p>
+    <div id="random-controls" class="random-controls" hidden>
+      <label for="random-length">Random length (bases)</label>
+      <input id="random-length" type="number" min="12" max="10000" step="1" value="300">
+      <button id="generate" type="button" class="secondary">Generate new sequence</button>
+    </div>
+    <label for="sequence" class="field-label">DNA sequence, 5′→3′</label>
+    <textarea id="sequence" spellcheck="false" rows="5" aria-describedby="sequence-help"></textarea>
+    <p id="sequence-help" class="note">Paste plain DNA or FASTA. Whitespace and FASTA headers are removed. Editing the sequence updates the analysis.</p>
+    <div class="preview-heading"><strong>Entered sequence</strong><span id="preview-label" class="note"></span></div>
+    <div id="sequence-preview" class="sequence-preview" role="region" aria-label="Entered DNA sequence with selected ORF highlighted" tabindex="0"></div>
+    <div class="options">
+      <fieldset>
+        <legend>ORF definition</legend>
+        <label><input type="radio" name="definition" value="start" checked> <strong>AUG to stop</strong> · starts at ATG in DNA (AUG in RNA) and ends at the first in-frame stop</label>
+        <label><input type="radio" name="definition" value="sense"> <strong>Sense run to stop</strong> · starts at a frame boundary or just after a stop; no ATG required</label>
+      </fieldset>
+      <div class="minimum"><label for="minimum">Minimum amino acids</label><input id="minimum" type="number" min="1" max="3000" value="5"><span class="note">Shorter ORFs are hidden</span></div>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+  </section>
+
+  <section class="panel" aria-labelledby="map-heading">
+    <div class="section-heading"><span class="step">2</span><h2 id="map-heading">Six-frame ORF map</h2></div>
+    <p id="summary" class="summary" aria-live="polite"></p>
+    <p class="note">+ frames read the entered strand left to right; − frames read its reverse complement right to left. Arrow length shows the ORF span, including its stop codon. Select an arrow or a list item below.</p>
+    <div class="map-scroll"><svg id="orf-map" role="img" aria-label="Open reading frames in six reading frames"></svg></div>
+    <div class="list-head"><h3>ORFs</h3><label for="sort">Sort <select id="sort"><option value="position">by position</option><option value="length">by length</option></select></label></div>
+    <div id="orf-list" class="orf-list" role="group" aria-label="Select an ORF"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="zoom-heading">
+    <div class="section-heading"><span class="step">3</span><h2 id="zoom-heading">Zoom into an ORF</h2></div>
+    <div id="zoom-empty" class="empty">Choose an ORF in the map or list to see its DNA codons and translation.</div>
+    <div id="zoom" hidden>
+      <div class="zoom-top"><div><h3 id="zoom-title"></h3><p id="zoom-meta" class="note"></p></div><div class="pager"><button id="prev" type="button" class="secondary">← Earlier codons</button><span id="page-label"></span><button id="next" type="button" class="secondary">Later codons →</button></div></div>
+      <div class="legend" aria-label="Codon colors"><span class="start-key">Start</span><span class="hydrophobic-key">Hydrophobic</span><span class="polar-key">Polar</span><span class="charged-key">Charged</span><span class="special-key">Gly / Pro</span><span class="stop-key">Stop</span></div>
+      <div id="context" class="context"></div>
+      <div id="codons" class="codons" aria-label="DNA codons and translated amino acids"></div>
+      <p id="protein" class="protein"></p>
+      <details><summary>Show full translated product</summary><p id="full-protein" class="protein"></p></details>
+      <p id="zoom-note" class="note"></p>
+    </div>
+  </section>
+  <footer>Standard genetic code. Complete ORFs only. Coordinates refer to the entered sequence, starting at base 1. Genomic DNA is scanned without splicing.</footer>
+</main>
+<script src="examples.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
